@@ -74,6 +74,7 @@ async function initSensors() {
 			console.log("Got orientation reading:", orient.quaternion);
 			dataChannel.send(JSON.stringify({
 				type: "orientation",
+				timestamp: orient.timestamp,
 				data: orient.quaternion,
 			}));
 		});

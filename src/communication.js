@@ -54,7 +54,7 @@ function createGame() {
 	gameId = generateCode(6);
 	document.getElementById("login-game-id").innerHTML = "Your game's id is: " + gameId;
 
-	document.getElementById("status-text").innerHTML = "Wating for opponent to join...";
+	document.getElementById("status-text").innerHTML = "Wating for controller to join...";
 	document.getElementById("status-text").classList.remove("error");
 	document.getElementById("status-text").classList.add("info");
 

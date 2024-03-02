@@ -13,7 +13,7 @@ let gl = canvas.getContext('webgl2');
 if(!gl){
     throw "Unable to get webgl2 context";
 }
-document.body.appendChild(canvas);
+document.getElementById("game-holder")?.appendChild(canvas);
 
 /**
  * @typedef Model

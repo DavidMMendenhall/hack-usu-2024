@@ -73,3 +73,8 @@ let frame = (d) => {
 }
 
 requestAnimationFrame(frame)
+
+/** @param {string} msg */
+window.readRemoteMessage = function(msg) { }
+
+window.onConnection = function() { }

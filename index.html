@@ -1,6 +1,65 @@
 <!DOCTYPE html>
 <html>
     <style>
+		body {
+			padding: 0;
+			margin: 0;
+			height: 100vh;
+		}
+
+		#login-holder {
+			font-size: 20pt;
+			text-align: center;
+			line-height: 35pt;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-around;
+			height: 100%;
+		}
+
+		#login-holder input {
+			font-size: 20pt;
+		}
+
+		#controller-holder {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-around;
+			height: 100%;
+		}
+
+		#luck-bar-holder {
+			width: 90%;
+			margin: 0 auto;
+			background-color: #ddd;
+			padding: 4pt;
+			border-radius: 14pt;
+		}
+
+		#luck-bar {
+			height: 20pt;
+			background-color: #88e;
+			border-radius: 10pt;
+		}
+
+		#button-holder {
+			display: flex;
+			justify-content: center;
+			margin: 0 auto;
+		}
+
+		#button-holder .button {
+			display: inline-block;
+			font-size: 40pt;
+			width: 2em;
+			height: 2em;
+			border: 3px solid red;
+			border-radius: 0.4em;
+			text-align: center;
+			background-color: #eee;
+			margin: 0 10px;
+		}
+
         canvas {
             position: absolute;
             top: 0px;
@@ -10,6 +69,41 @@
         }
     </style>
     <body>
+		<div id="login-holder">
+			<div id="login">
+				<input type="button" id="login-debug-create" value="Start"
+					onclick="createGame()">
+				<br>
+				<span id="login-game-id"></span><br>
+				<span id="status-text"></span>
+			</div>
+		</div>
+		<div id="game-holder" style="display: none"></div>
+
+		<!-- The core Firebase JS SDK is always required and must be listed first -->
+		<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-app.js"></script>
+
+		<!-- TODO: Add SDKs for Firebase products that you want to use
+			https://firebase.google.com/docs/web/setup#available-libraries -->
+		<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-database.js"></script>
+
+		<script>
+		  // Your web app's Firebase configuration
+		  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+		  var firebaseConfig = {
+			apiKey: "AIzaSyAndfjPoKkn11MqCkdE2Lo6vFpyTqwbU7k",
+			authDomain: "just-a-test-8c59d.firebaseapp.com",
+			projectId: "just-a-test-8c59d",
+			storageBucket: "just-a-test-8c59d.appspot.com",
+			messagingSenderId: "688630560151",
+			appId: "1:688630560151:web:2994e1655b052b4dc540d2",
+			measurementId: "G-M6YLKQRHRM"
+		  };
+		  // Initialize Firebase
+		  firebase.initializeApp(firebaseConfig);
+		</script>
+
+        <script src="src/communication.js"></script>
         <script src="src/main.js" type="module"></script>
     </body>
 </html>
