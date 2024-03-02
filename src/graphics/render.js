@@ -95,7 +95,7 @@ resize();
 let clear = () => {
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.colorMask(true, true, true, true);
-    gl.clearColor(0.1, 0.1, 0.1, 1.0);
+    gl.clearColor(0.5, 0.5, 0.7, 1.0);
     gl.clearDepth(1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.colorMask(true, true, true, false);// dont wirte alpha data

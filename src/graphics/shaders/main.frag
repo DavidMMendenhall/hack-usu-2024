@@ -11,7 +11,7 @@ uniform float opacity;
 // Lights & Materials
 const vec4 mtSpecular = vec4(0.1, 0.1, 0.1, 1.0);
 const vec4 ltEmission = vec4(0.7, 0.7, 0.7, 1.0);
-const vec3 ltPosition = vec3(5.0, 5.0, 5.0);
+const vec3 ltPosition = vec3(205.0, 205.0, 205.0);
 const vec4 ltAmbient = vec4(0.1, 0.1, 0.1, 1.0);
 
 in vec3 vNormal;
