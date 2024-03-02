@@ -159,14 +159,14 @@ function disableGUI() {
 
 	let gh = document.getElementById("game-holder");
 	if (gh) {
-		gh.style.display = "initial";
+		gh.style.display = "block";
 	}
 }
 
 function enableGUI() {
 	let lh = document.getElementById("login-holder");
 	if (lh) {
-		lh.style.display = "initial";
+		lh.style.display = "block";
 	}
 
 	let gh = document.getElementById("game-holder");
