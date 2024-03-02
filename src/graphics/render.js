@@ -22,6 +22,7 @@ document.body.appendChild(canvas);
  * @prop {Float32Array} colors
  * @prop {Float32Array} textures
  * @prop {Uint32Array} indices
+ * @prop {string} texture
  * @prop {number} [_modelId]
  */
 
@@ -66,6 +67,7 @@ document.body.appendChild(canvas);
  * @prop {WebGLVertexArrayObject} VAO
  * @prop {BufferSet} buffers
  * @prop {number} indexCount
+ * @prop {WebGLTexture} glTexture
  */
 
 /**
@@ -315,6 +317,7 @@ let Graphics = await (async () => {
         eye: gl.getUniformLocation(program, 'uEye'),
         opacity: gl.getUniformLocation(program, 'opacity'),
         highlight: gl.getUniformLocation(program, 'highlight'),
+        texture: gl.getUniformLocation(program, 'uTexture'),
     };
 
 
@@ -391,6 +394,8 @@ let Graphics = await (async () => {
         }
         for(let i = 0; i < drawQueue.length; i++){
             let item = drawQueue[i];
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, modelDataSets[item.modelId].glTexture)
             gl.bindVertexArray(modelDataSets[item.modelId].VAO);
             gl.drawElementsInstanced(gl.TRIANGLES, modelDataSets[item.modelId].indexCount, gl.UNSIGNED_INT, 0, item.poses.length);
             gl.bindVertexArray(null);
@@ -409,13 +414,32 @@ let Graphics = await (async () => {
             model._modelId = modelDataSets.length;
             let buffers = bufferModelData(model, poses.length);
             let VAO = createAttribArray(buffers, attributes);
+            let texture = gl.createTexture();
+            if (!texture){
+                throw "No Texture"
+            }
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+ 
+                // Fill the texture with a 1x1 blue pixel.
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                            new Uint8Array([0, 0, 255, 255]));
             modelDataSets.push({
                 matricies: new Float32Array(16 * poses.length),
                 VAO,
                 allocatedCount: poses.length,
                 buffers,
                 indexCount: model.indices.length,
+                glTexture: texture,
             });
+            let img = new Image();
+            img.src = model.texture;
+            img.onload = () => {
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, img);
+                gl.generateMipmap(gl.TEXTURE_2D);
+            }
+            
         } else if (modelDataSets[model._modelId].allocatedCount < poses.length){
             let buffers = bufferModelData(model, poses.length);
             let VAO = createAttribArray(buffers, attributes);
@@ -425,6 +449,7 @@ let Graphics = await (async () => {
                 allocatedCount: poses.length,
                 buffers,
                 indexCount: model.indices.length,
+                glTexture: modelDataSets[model._modelId].glTexture,
             };
         }
         // debugger;

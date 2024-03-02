@@ -6,6 +6,7 @@ precision lowp float;
 // Environment
 uniform vec3 uEye;
 uniform float opacity;
+uniform sampler2D uTexture;
 
 //
 // Lights & Materials
@@ -30,7 +31,7 @@ void main()
     // Compute diffuse lighting component
     float Idiff = dot(vLight, vNormal);
     Idiff = clamp(Idiff, 0.0, 1.0);
-    vec4 diffuse = Idiff * vColor * ltEmission;
+    vec4 diffuse = Idiff * texture(uTexture, vTexture) * ltEmission;
     diffuse.w = 1.0;
 
     //
@@ -44,7 +45,7 @@ void main()
     }
     iSpecular = clamp(iSpecular, 0.0, 1.0);
     vec4 specular = iSpecular * mtSpecular * ltEmission;
-    vec4 total = diffuse + specular + ltAmbient * vColor;
+    vec4 total = diffuse + specular + ltAmbient * texture(uTexture, vTexture);
     total.a = opacity;
 
     outColor = total;

@@ -308,8 +308,14 @@ const byteSizeTable = {
     'double': 8,
     'float64':8,
 }
-
-let loadPLY = async (src, normalize=true) => {
+/**
+ * 
+ * @param {string} src 
+ * @param {string} textureSrc 
+ * @param {boolean} normalize 
+ * @returns {Promise<import("../graphics/render.js").Model>}
+ */
+let loadPLY = async (src, textureSrc, normalize=true) => {
     /** @type {Blob} */
     let file;
     /** @type {PLYHeader} */
@@ -341,7 +347,7 @@ let loadPLY = async (src, normalize=true) => {
             console.log(header);
             return parseGeometry(f, file, header, normalize);
         })
-        .then(model => computeNormals(model))
+        .then(model => {model.texture = textureSrc; return model})
 
     })
 

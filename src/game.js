@@ -15,6 +15,7 @@ import { add, magnitude, normalize, scale, subtract, transformVector } from "./m
 /**
  * @typedef LevelDef
  * @prop {string} geometry path to geometry
+ * @prop {string} texture path to texture
  * @prop {number} fluid_level
  * @prop {PotDef[]} pots
  * @prop {number[]} startPos
@@ -32,12 +33,11 @@ const STATES = {
 
 let Game = await ( async () => {
     let models = {
-        pot: await loadPLY("./assets/models/pot.ply", true),
+        pot: await loadPLY("./assets/models/pot.ply", "./assets/models/PotTexture.png", true),
         clubs:{
-            iron: await loadPLY("./assets/models/iron.ply", false),
+            iron: await loadPLY("./assets/models/iron.ply","./assets/models/golf_diffuse_no_ao.jpg", false),
         },
-        ball: await loadPLY("./assets/models/golfball.ply", false),
-        tree: await loadPLY("./assets/models/tree.ply", false),
+        ball: await loadPLY("./assets/models/golfball.ply","./assets/models/golf_diffuse_no_ao.jpg", false),
     }
 
     /**
@@ -93,7 +93,7 @@ let Game = await ( async () => {
             });
         }
 
-        loadPLY(levelData.geometry, false)
+        loadPLY(levelData.geometry,levelData.texture, false)
         .then(level => {
             Physics.setLevel(level);
             levelGeometry = level;
@@ -156,16 +156,104 @@ let Game = await ( async () => {
     let stillTime = 0;
     const STOP_TIME = 3000; // 3 seconds
     const STOP_THRESHOLD = 0.05;
+
+    const CUBE_MODEL = {
+        vertices: new Float32Array([
+            -0.5, 0.5, 0.5, // front
+            -0.5,-0.5, 0.5,
+             0.5,-0.5, 0.5,
+             0.5, 0.5, 0.5,
+    
+            0.5, 0.5,-0.5, // back
+            0.5,-0.5,-0.5,
+           -0.5,-0.5,-0.5,
+           -0.5, 0.5,-0.5,
+    
+           -0.5, 0.5,-0.5, // left
+           -0.5,-0.5,-0.5,
+           -0.5,-0.5, 0.5,
+           -0.5, 0.5, 0.5,
+    
+            0.5, 0.5, 0.5, // right
+            0.5,-0.5, 0.5,
+            0.5,-0.5,-0.5,
+            0.5, 0.5,-0.5,
+    
+           -0.5, 0.5,-0.5, // top
+           -0.5, 0.5, 0.5,
+            0.5, 0.5, 0.5,
+            0.5, 0.5,-0.5,
+    
+            -0.5,-0.5, 0.5, // bottom
+            -0.5,-0.5,-0.5,
+             0.5,-0.5,-0.5,
+             0.5,-0.5, 0.5,
+        ]),
+        normals: new Float32Array([
+           0.0, 0.0, 1.0, // front
+           0.0, 0.0, 1.0,
+           0.0, 0.0, 1.0,
+           0.0, 0.0, 1.0,
+    
+           0.0, 0.0,-1.0, // back
+           0.0, 0.0,-1.0,
+           0.0, 0.0,-1.0,
+           0.0, 0.0,-1.0,
+    
+          -1.0, 0.0, 0.0, // left
+          -1.0, 0.0, 0.0,
+          -1.0, 0.0, 0.0,
+          -1.0, 0.0, 0.0,
+    
+           1.0, 0.0, 0.0, // right
+           1.0, 0.0, 0.0,
+           1.0, 0.0, 0.0,
+           1.0, 0.0, 0.0,
+    
+           0.0, 1.0, 0.0, // top
+           0.0, 1.0, 0.0,
+           0.0, 1.0, 0.0,
+           0.0, 1.0, 0.0,
+    
+           0.0,-1.0, 0.0, // bottom
+           0.0,-1.0, 0.0,
+           0.0,-1.0, 0.0,
+           0.0,-1.0, 0.0,
+       ]),
+       colors: new Float32Array(6 * 4 * 4),
+        textures: new Float32Array(6 * 4 * 2), // 6 faces with 4 points, each with 2 coordinates
+        indices: new Uint32Array([
+            0 + 0, 1 + 0,   1 + 0, 2 + 0,   2 + 0, 3 + 0,  3 + 0, 0 + 0,
+            0 + 4, 1 + 4,   1 + 4, 2 + 4,   2 + 4, 3 + 4,  3 + 4, 0 + 4,
+            0 + 8, 1 + 8,   1 + 8, 2 + 8,   2 + 8, 3 + 8,  3 + 8, 0 + 8,
+            0 +12, 1 +12,   1 +12, 2 +12,   2 +12, 3 +12,  3 +12, 0 +12,
+            0 +16, 1 +16,   1 +16, 2 +16,   2 +16, 3 +16,  3 +16, 0 +16,
+            0 +20, 1 +20,   1 +20, 2 +20,   2 +20, 3 +20,  3 +20, 0 +20, // line model
+    
+            0 + 0, 1 + 0, 2 + 0, 0 + 0, 2 + 0, 3 + 0,
+            0 + 4, 1 + 4, 2 + 4, 0 + 4, 2 + 4, 3 + 4,
+            0 + 8, 1 + 8, 2 + 8, 0 + 8, 2 + 8, 3 + 8,
+            0 +12, 1 +12, 2 +12, 0 +12, 2 +12, 3 +12,
+            0 +16, 1 +16, 2 +16, 0 +16, 2 +16, 3 +16,
+            0 +20, 1 +20, 2 +20, 0 +20, 2 +20, 3 +20, // box model
+        ]),
+        texture: "",
+    }
     let gameLoop = (time) => {
         let dt = (time - oldTime) / 1000;
         oldTime = time;
+        Graphics.addToDrawQueue(CUBE_MODEL, [{
+            position: {x:0, y:fluidLevel - 1, z:0},
+            scale: {x: 1000, y:1, z:1000},
+            quaternion: quaternionFromAngle(0, [1, 0, 1]),
+        },])
         switch(state){
             case STATES.loading: {
                 // do nothing and wait
                 requestAnimationFrame(gameLoop);
                 break;
             }
-
+           
             case STATES.hitting: {
                 // listen for rotation/calibrate commands from controller
                 // watch for shaking to build magic power
@@ -250,16 +338,16 @@ let Game = await ( async () => {
 
                 addPotsToDrawQueue();
                 let clubOrigin = {
-                    x: Math.cos(teeAngle + Math.PI / 2) * clubDistance,
+                    x: Math.cos(teeAngle + Math.PI / 6) * clubDistance,
                     y: 0.80,
-                    z: Math.sin(teeAngle + Math.PI / 2) * clubDistance,
+                    z: Math.sin(teeAngle + Math.PI / 6) * clubDistance,
                 }
                 clubOrigin = add(clubOrigin, teePosition);
                 let clubQuaternion = multiplyQuaternion(multiplyQuaternion(inputQuaternion,calQuaternion), quaternionFromAngle(teeAngle - Math.PI / 2, [0, 1, 0]));
                 
-                Graphics.camera.position = add(teePosition, {x:Math.cos(teeAngle) * teeCamDistance, y:1, z:Math.sin(teeAngle) * teeCamDistance});
+                // Graphics.camera.position = add(teePosition, {x:Math.cos(teeAngle) * teeCamDistance, y:1, z:Math.sin(teeAngle) * teeCamDistance});
                 let ballDir = add( {x:0, y:1, z:0}, subtract(ballPhysicsModel.position, Graphics.camera.position));
-                Graphics.camera.position = add(Graphics.camera.position, scale(ballDir, 0.1));
+                Graphics.camera.position = add(Graphics.camera.position, scale(ballDir, 0.02));
                 Graphics.camera.target = ballPhysicsModel.position;
                 Graphics.camera.fieldOfView = Math.PI / 1.5;
                 Graphics.addToDrawQueue(models.clubs.iron, [{
