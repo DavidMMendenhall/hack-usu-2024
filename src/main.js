@@ -89,8 +89,8 @@ window.readRemoteMessage = function(msg) {
     let data = JSON.parse(msg.data);
     if(data.data){
         inputQuaternion.i = data.data[0];
-        inputQuaternion.j = data.data[2];
-        inputQuaternion.k = data.data[1];
+        inputQuaternion.j = data.data[1];
+        inputQuaternion.k = data.data[2];
         inputQuaternion.w = data.data[3];
     }
     // console.log(inputQuaternion);
