@@ -349,7 +349,7 @@ let Game = await ( async () => {
                 let ballDir = add( {x:0, y:1, z:0}, subtract(ballPhysicsModel.position, Graphics.camera.position));
                 Graphics.camera.position = add(Graphics.camera.position, scale(ballDir, 0.02));
                 Graphics.camera.target = ballPhysicsModel.position;
-                Graphics.camera.fieldOfView = Math.PI / 1.5;
+                Graphics.camera.fieldOfView = Math.PI / 2;
                 Graphics.addToDrawQueue(models.clubs.iron, [{
                     position: clubOrigin,
                     scale: {x: 1, y:1, z:1},
