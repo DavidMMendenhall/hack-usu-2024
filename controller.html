@@ -22,8 +22,14 @@
 				</div>
 
 				<div id="button-holder">
-					<div class="button" onmousedown="leftHeld=true" onmouseup="leftHeld=false">&larr;</div>
-					<div class="button" onmousedown="rightHeld=true" onmouseup="rightHeld=false">&rarr;</div>
+					<div class="button"
+						ontouchstart="leftHeld=true" ontouchend="leftHeld=false"
+						onmousedown="leftHeld=true" onmouseup="leftHeld=false"
+						>&larr;</div>
+					<div class="button"
+						ontouchstart="rightHeld=true" ontouchend="rightHeld=false"
+						onmousedown="rightHeld=true" onmouseup="rightHeld=false"
+						>&rarr;</div>
 				</div>
 
 				<div id="calibrate-button-holder" class="text-haver">
