@@ -68,7 +68,7 @@ window.addEventListener("load", () => {
 			alert("Got permissions :)");
 		}
 
-		orient = new RelativeOrientationSensor({ frequency: 60, referenceFrame: "device" });
+		orient = new AbsoluteOrientationSensor({ frequency: 60, referenceFrame: "device" });
 		gyro = new Gyroscope({ frequency: 60 });
 
 		orient.addEventListener("reading", () => {
@@ -94,6 +94,14 @@ window.addEventListener("load", () => {
 				z: gyro.z,
 			}));
 		});
+
+		gyro.addEventListener("error", (event) => {
+			alert("got error doing gyro reading :(");
+			console.log(event);
+		});
+
+		orient.start();
+		gyro.start();
 	}).catch(() => {
 		alert("Error getting accelerometer and gyroscope permissions");
 	});
