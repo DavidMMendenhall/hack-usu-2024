@@ -16,7 +16,7 @@ body {
 	font-size: 20pt;
 }
 
-#controller-holder {
+#game-holder {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
