@@ -4,6 +4,21 @@ import { multiplyQuaternion, quaternionFromAngle, unitQuaternionInverse } from "
 import { Graphics } from "./graphics/render.js";
 import { Physics } from "./physics/physics.js";
 
+/**
+ * @typedef PotDef
+ * @prop {"goal"|"required"|"point"|"bad"} type
+ * @prop {number[]} position
+ * @prop {boolean} onGround
+ */
+
+/**
+ * @typedef LevelDef
+ * @prop {string} geometry path to geometry
+ * @prop {number} fluid_level
+ * @prop {PotDef[]} pots
+ * @prop {number[]} startPos
+ */
+
 const STATES = {
     loading: 0,
     hitting: 1,
@@ -24,8 +39,18 @@ let Game = await ( async () => {
         tree: await loadPLY("./assets/models/tree.ply", false),
     }
 
+    /**
+     * 
+     * @param {LevelDef} levelData 
+     */
     let loadLevel = async (levelData) => {
-        loadPLY("./assets/models/eyeglass-lake.ply", false)
+
+        teePosition.x = levelData.startPos[0];
+        teePosition.y = levelData.startPos[1];
+        teePosition.z = levelData.startPos[2];
+        fluidLevel = levelData.fluid_level;
+
+        loadPLY(levelData.geometry, false)
         .then(level => {
             Physics.setLevel(level);
             levelGeometry = level;
@@ -39,6 +64,7 @@ let Game = await ( async () => {
     let calQuaternion = quaternionFromAngle(0, [1, 0, 0]);
     let currentStroke = 1;
     let score = 0;
+    let fluidLevel = 0;
     let teePosition = {
         x: 0,
         y: 0,
@@ -161,14 +187,18 @@ let Game = await ( async () => {
         if(event.key == 'ArrowRight'){}
         if(event.key == 'ArrowLeft'){}
     });
-
+    // @ts-ignore
     window.readRemoteMessage = function(msg) { 
         let data = JSON.parse(msg.data);
-        if(data.data){
+        // console.log(msg)
+        if(data.type=="orientation" && data.data){
             inputQuaternion.i =-data.data[0];
             inputQuaternion.j =-data.data[2];
             inputQuaternion.k = data.data[1];
             inputQuaternion.w = data.data[3];
+        }
+        if(data.type=="calibrate"){
+            calQuaternion = unitQuaternionInverse(inputQuaternion);
         }
     }
     return {

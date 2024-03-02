@@ -6,5 +6,7 @@ window.onConnection = function() {
     for (const el of document.getElementsByTagName("canvas")) {
         el.style.visibility = "visible";
     }
-    Game.loadLevel();
+    fetch("./assets/levels/eyeglass-lake.json")
+    .then(data => data.json())
+    .then(j => Game.loadLevel(j));
 }
