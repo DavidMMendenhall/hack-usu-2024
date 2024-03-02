@@ -97,3 +97,16 @@ async function initSensors() {
 
 // Call the function to initialize sensors
 initSensors();
+
+let leftHeld = false;
+let rightHeld = false;
+
+setInterval(() => {
+	if (leftHeld && rightHeld) {
+		return;
+	} else if (leftHeld) {
+		dataChannel.send('{"type":"rotate","direction":-1}');
+	} else if (rightHeld) {
+		dataChannel.send('{"type":"rotate","direction":1}');
+	}
+}, 1000/60);
