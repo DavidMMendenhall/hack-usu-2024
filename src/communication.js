@@ -377,7 +377,7 @@ function startListeningOnChannel(e) {
 	rChannel.onclose = function () {
 		channelOpen = false;
 		console.log("Recieve Channel Closed");
-		document.getElementById("status-text").innerHTML = "Communication with " + remoteName + " was closed.";
+		document.getElementById("status-text").innerHTML = "Communication was closed.";
 		document.getElementById("status-text").classList.remove("error");
 		document.getElementById("status-text").classList.add("info");
 
