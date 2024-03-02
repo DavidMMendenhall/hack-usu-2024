@@ -77,4 +77,8 @@ requestAnimationFrame(frame)
 /** @param {string} msg */
 window.readRemoteMessage = function(msg) { }
 
-window.onConnection = function() { }
+window.onConnection = function() {
+    for (const el of document.getElementsByTagName("canvas")) {
+        el.style.visibility = "visible";
+    }
+}
