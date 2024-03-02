@@ -1,5 +1,5 @@
 {
-	"geometry": "assets/models/eyeglass-lake.ply",
+	"geometry": "./assets/models/eyeglass-lake.ply",
 	"fluid_level": 0,
 	"pots": [
 		{

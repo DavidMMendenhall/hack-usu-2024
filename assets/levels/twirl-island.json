@@ -1,5 +1,5 @@
 {
-	"geometry": "assets/models/twirl-island.ply",
+	"geometry": "./assets/models/twirl-island.ply",
 	"fluid_level": 0,
 	"pots": [
 		{
@@ -314,5 +314,5 @@
 		5.887622833251953,
 		-1.7173113822937012
 	],
-	"texture": "./assets/twirl-island.png"
+	"texture": "./assets/models/twirl-island.png"
 }

@@ -1,5 +1,5 @@
 {
-	"geometry": "assets/models/five-rocks.ply",
+	"geometry": "./assets/models/five-rocks.ply",
 	"fluid_level": 0,
 	"pots": [
 		{
@@ -539,5 +539,5 @@
 		3.563347578048706,
 		-17.08683967590332
 	],
-	"texture": "./assets/five_rocks.png"
+	"texture": "./assets/models/five-rocks.png"
 }
