@@ -51,16 +51,25 @@ let Game = await ( async () => {
         teePosition.z = levelData.startPos[2];
         fluidLevel = levelData.fluid_level;
 
+        let objPos = {
+            x: levelData.pots[0].position[0],
+            y: levelData.pots[0].position[1],
+            z: levelData.pots[0].position[2],
+        };
+
+        pots = levelData.pots;
+
         loadPLY(levelData.geometry, false)
         .then(level => {
             Physics.setLevel(level);
             levelGeometry = level;
             state = STATES.hitting;
             console.log("HITTING")
-        });
+        })
         state = STATES.loading;
         requestAnimationFrame(gameLoop);
     }
+
     let levelGeometry;
     let inputQuaternion = quaternionFromAngle(0, [1, 0, 0]);
     let calQuaternion = quaternionFromAngle(0, [1, 0, 0]);
@@ -101,6 +110,45 @@ let Game = await ( async () => {
 
     let pots = [];
 
+    let addPotsToDrawQueue = () => {
+        Graphics.addToDrawQueue(
+            models.pot,
+            pots.map(pot => {
+                let objPos = {
+                    x: pot.position[0],
+                    y: pot.position[1],
+                    z: pot.position[2],
+                };
+
+                if (pot.onGround) {
+                    let intersection = Physics.findIntersectionWithBVH({
+                        point: objPos,
+                        dir: {
+                            x: 0,
+                            y: -1,
+                            z: 0,
+                        },
+                    });
+
+                    if (intersection && intersection.point) {
+                        objPos = intersection.point;
+                        objPos.y += 0.2
+                    }
+                }
+
+                return {
+                    position: objPos,
+                    scale: {
+                        x: 0.5,
+                        y: 0.5,
+                        z: 0.5,
+                    },
+                    quaternion: quaternionFromAngle(0, [1, 0, 0])
+                }
+            }
+        ));
+    }
+
     let state = STATES.idle;
     let oldTime = 0;
     let gameLoop = (time) => {
@@ -126,6 +174,8 @@ let Game = await ( async () => {
                     scale: {x: 1, y:1, z:1},
                     quaternion: quaternionFromAngle(0, [1, 0, 1]),
                 },])
+
+                addPotsToDrawQueue();
                 let clubOrigin = {
                     x: Math.cos(teeAngle + Math.PI / 2) * clubDistance,
                     y: 0.80,
@@ -195,6 +245,8 @@ let Game = await ( async () => {
                     scale: {x: 1, y:1, z:1},
                     quaternion: quaternionFromAngle(0, [1, 0, 1]),
                 },])
+
+                addPotsToDrawQueue();
                 let clubOrigin = {
                     x: Math.cos(teeAngle + Math.PI / 2) * clubDistance,
                     y: 0.80,

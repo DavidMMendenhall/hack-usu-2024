@@ -83,9 +83,15 @@ let Physics = (() => {
         console.log(bvh)
     }
 
+    /** @param {import("../math/geometry.js").Ray} ray */
+    let findIntersectionWithBVH = (ray) => {
+        return bvh?.findIntersection(ray);
+    };
+
     return {
         setLevel,
         updateSphere,
+        findIntersectionWithBVH,
     }
 })();
 

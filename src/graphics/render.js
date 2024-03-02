@@ -376,7 +376,7 @@ let Graphics = await (async () => {
             for(let p = 0; p < item.poses.length; p++){
                 let pose = item.poses[p];
 
-                let mat = modelDataSets[item.modelId].matricies.subarray(p * 16, 16 * 4);
+                let mat = modelDataSets[item.modelId].matricies.subarray(p * 16, (p + 1) * 16);
 
                 identityMatrix4x4(mat);
                 translate(mat, pose.position.x, pose.position.y, pose.position.z);
