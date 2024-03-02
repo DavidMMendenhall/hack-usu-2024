@@ -65,6 +65,12 @@ async function initSensors() {
 			throw new Error('Permission for Gyroscope denied.');
 		}
 
+		// Request permission for Gyroscope
+		const magnetPermission = await navigator.permissions.query({ name: 'magnetometer' });
+		if (magnetPermission.state !== 'granted') {
+			throw new Error('Permission for Magnetometer denied.');
+		}
+
 		// Instantiate sensors
 		orient = new AbsoluteOrientationSensor({ frequency: 60, referenceFrame: "device" });
 		gyro = new Gyroscope({ frequency: 60 });
