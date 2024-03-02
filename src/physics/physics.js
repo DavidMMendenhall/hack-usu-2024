@@ -30,6 +30,8 @@ let Physics = (() => {
      */
     let updateSphere = (sphere, gravity, delta) => {
         sphere.velocity = add(sphere.velocity, scale(gravity, delta));
+        let sphereDirection = scale(sphere.velocity, 1 / magnitude(sphere.velocity));
+        let sphereSurfacePoint = add(sphere.position, scale(sphereDirection, sphere.radius));
         if(bvh && levelGeometry){
             // project sphere velocity to detect colision
             let intersection = bvh.findIntersection({point:sphere.position, dir:sphere.velocity});
