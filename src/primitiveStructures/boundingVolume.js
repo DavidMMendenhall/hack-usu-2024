@@ -298,7 +298,7 @@ let buildHierarchy = (data, minPrimitiveForSplit, extraInfo=false) => {
                     let point = intersection.rayTriangle(ray, triangle);
                     testCount ++;
                     if(point){
-                        if(hitTriangle.point && hitTriangle.point.t > point.t){
+                        if(!hitTriangle.point || (hitTriangle.point && hitTriangle.point.t > point.t)){
                             hitTriangle.face = face;
                             hitTriangle.finalNode = node;
                             hitTriangle.point = point;

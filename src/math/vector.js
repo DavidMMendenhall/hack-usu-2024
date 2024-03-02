@@ -54,6 +54,20 @@ let normalize = (vector) => {
 };
 
 /**
+ * Scales a vector
+ * @param {Vector} vector 
+ * @param {number} scalar 
+ * @returns 
+ */
+let scale = (vector, scalar) => {
+    return {
+        x: vector.x * scalar,
+        y: vector.y * scalar,
+        z: vector.z * scalar,
+    }
+}
+
+/**
  * 
  * @param {Vector} a 
  * @param {Vector} b 
@@ -64,6 +78,20 @@ let subtract = (a, b)=>{
         x: a.x - b.x,
         y: a.y - b.y,
         z: a.z - b.z,
+    }
+}
+
+/**
+ * 
+ * @param {Vector} a 
+ * @param {Vector} b 
+ * @returns {Vector} a + b
+ */
+let add = (a, b)=>{
+    return {
+        x: a.x + b.x,
+        y: a.y + b.y,
+        z: a.z + b.z,
     }
 }
 
@@ -81,4 +109,14 @@ let transformVector = (m, v) => {
     }
 }
 
-export {subtract, normalize, magnitude, cross, dot, transformVector}
+/**
+ * Reflects vector d across a surface with normal n
+ * See https://math.stackexchange.com/questions/13261/how-to-get-a-reflection-vector
+ * @param {Vector} d
+ * @param {Vector} n must be normalized
+ */
+let reflect = (d, n) => {
+    return subtract(d,scale(n, 2 * dot(d, n)))
+}
+
+export {add, subtract, normalize, magnitude, cross, dot, transformVector, scale, reflect}

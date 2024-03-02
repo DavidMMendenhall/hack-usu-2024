@@ -382,7 +382,7 @@ let Graphics = await (async () => {
                 translate(mat, pose.position.x, pose.position.y, pose.position.z);
                 scaleMatrix4x4(mat, pose.scale.x, pose.scale.y, pose.scale.z);
                 let rotationMatrix = matrixFromQuaternion(pose.quaternion);
-                multiplyMatrix4x4(mat, rotationMatrix, mat);
+                multiplyMatrix4x4(rotationMatrix, mat,  mat);
             }
             gl.bindVertexArray(modelDataSets[item.modelId].VAO);
             gl.bindBuffer(gl.ARRAY_BUFFER, modelDataSets[item.modelId].buffers.matrix);

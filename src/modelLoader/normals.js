@@ -104,4 +104,45 @@ let computeFaceNormals = (model) => {
     return faceNormals;
 }
 
-export { computeNormals }
+/**
+ * Computes the normal for each face
+ * @param {{vertices: Float32Array, normals: Float32Array, textures: Float32Array, indices: Uint32Array, colors: Float32Array}} model 
+ */
+let computeFaceNormal = (model, face) => {
+    let p1 = {x:0, y:0, z:0};
+    let p2 = {x:0, y:0, z:0};
+    let p3 = {x:0, y:0, z:0};
+
+    let u = {x:0, y:0, z:0};
+    let v = {x:0, y:0, z:0};
+    let UxV = {x:0, y:0, z:0};
+
+    p1.x = model.vertices[model.indices[face * 3 + 0] * 3 + 0];
+    p1.y = model.vertices[model.indices[face * 3 + 0] * 3 + 1];
+    p1.z = model.vertices[model.indices[face * 3 + 0] * 3 + 2];
+
+    p2.x = model.vertices[model.indices[face * 3 + 1] * 3 + 0];
+    p2.y = model.vertices[model.indices[face * 3 + 1] * 3 + 1];
+    p2.z = model.vertices[model.indices[face * 3 + 1] * 3 + 2];
+
+    p3.x = model.vertices[model.indices[face * 3 + 2] * 3 + 0];
+    p3.y = model.vertices[model.indices[face * 3 + 2] * 3 + 1];
+    p3.z = model.vertices[model.indices[face * 3 + 2] * 3 + 2];
+
+    u.x = p2.x - p1.x;
+    u.y = p2.y - p1.y;
+    u.z = p2.z - p1.z;
+
+    v.x = p3.x - p1.x;
+    v.y = p3.y - p1.y;
+    v.z = p3.z - p1.z;
+
+    UxV.x = u.y * v.z - v.y * u.z;
+    UxV.y = v.x * u.z - u.x * v.z;
+    UxV.z = u.x * v.y - v.x * u.y;
+
+    normalize(UxV);
+    return UxV;
+}
+
+export { computeNormals, computeFaceNormal }
