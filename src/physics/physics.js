@@ -48,7 +48,7 @@ let Physics = (() => {
                         levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 0] * 3 + 0] +
                         levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 1] * 3 + 0] +
                         levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 2] * 3 + 0];
-                        bouncyness /= 6;
+                        bouncyness = 0;
                         let friction = 
                         levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 0] * 3 + 2] +
                         levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 1] * 3 + 2] +

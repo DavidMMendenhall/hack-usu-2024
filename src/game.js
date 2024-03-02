@@ -51,13 +51,47 @@ let Game = await ( async () => {
         teePosition.z = levelData.startPos[2];
         fluidLevel = levelData.fluid_level;
 
-        let objPos = {
-            x: levelData.pots[0].position[0],
-            y: levelData.pots[0].position[1],
-            z: levelData.pots[0].position[2],
-        };
-
         pots = levelData.pots;
+        for (let p = 0; p < pots.length; p++) {
+            const pot = pots[p];
+
+			let objPos = {
+				x: pot.position[0],
+				y: pot.position[1],
+				z: pot.position[2],
+			};
+
+			if (pot.onGround) {
+				let intersection = Physics.findIntersectionWithBVH({
+					point: objPos,
+					dir: {
+						x: 0,
+						y: -1,
+						z: 0,
+					},
+				});
+
+				if (intersection && intersection.point) {
+					objPos = intersection.point;
+					objPos.y += 0.2
+				}
+			}
+
+            potPoses.push({
+                position: objPos,
+                scale: {
+                    x: 0.5,
+                    y: 0.5,
+                    z: 0.5,
+                },
+                quaternion: quaternionFromAngle(0, [1, 0, 0])
+            });
+
+            potCollisions.push({
+                position: objPos,
+                radius: .15,
+            });
+        }
 
         loadPLY(levelData.geometry, false)
         .then(level => {
@@ -109,44 +143,12 @@ let Game = await ( async () => {
     };
 
     let pots = [];
+    let potPoses = [];
+    /** @type {{position: (import("./math/vector.js").Vector), radius: number}[]} */
+	let potCollisions = [];
 
     let addPotsToDrawQueue = () => {
-        Graphics.addToDrawQueue(
-            models.pot,
-            pots.map(pot => {
-                let objPos = {
-                    x: pot.position[0],
-                    y: pot.position[1],
-                    z: pot.position[2],
-                };
-
-                if (pot.onGround) {
-                    let intersection = Physics.findIntersectionWithBVH({
-                        point: objPos,
-                        dir: {
-                            x: 0,
-                            y: -1,
-                            z: 0,
-                        },
-                    });
-
-                    if (intersection && intersection.point) {
-                        objPos = intersection.point;
-                        objPos.y += 0.2
-                    }
-                }
-
-                return {
-                    position: objPos,
-                    scale: {
-                        x: 0.5,
-                        y: 0.5,
-                        z: 0.5,
-                    },
-                    quaternion: quaternionFromAngle(0, [1, 0, 0])
-                }
-            }
-        ));
+        Graphics.addToDrawQueue(models.pot, potPoses);
     }
 
     let state = STATES.idle;
@@ -283,6 +285,22 @@ let Game = await ( async () => {
                     currentStroke++;
                     state = STATES.hitting
                 }
+
+                let idxsToErase = []
+                for (let p = 0; p < pots.length; p++) {
+                    let delta = subtract(ballPhysicsModel.position, potCollisions[p].position)
+                    if (magnitude(delta) <= potCollisions[p].radius + ballPhysicsModel.radius) {
+                        console.log("removing pot!");
+                        idxsToErase.push(p);
+                    }
+                }
+
+                for (let i = idxsToErase.length - 1; i >= 0; i--) {
+                    pots.splice(idxsToErase[i], 1);
+                    potPoses.splice(idxsToErase[i], 1);
+                    potCollisions.splice(idxsToErase[i], 1);
+                }
+
                 requestAnimationFrame(gameLoop);
                 break;
             }
