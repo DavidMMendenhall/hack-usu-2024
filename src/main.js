@@ -10,6 +10,8 @@ let pot = await loadPLY("./assets/models/pot.ply", true);
 let tree = await loadPLY("./assets/models/tree.ply", false);
 let iron = await loadPLY("./assets/models/iron.ply", true);
 let level = await loadPLY("./assets/models/eyeglass-lake.ply", false);
+
+let inputQuaternion = quaternionFromAngle(0, [1, 0, 0]);
 /** @type {import("./physics/physics.js").PhysicsSphere} */
 let testSphere = {
     radius: 0.5,
@@ -63,22 +65,38 @@ let frame = (d) => {
         scale: {x: 1, y:1, z:1},
         quaternion: quaternionFromAngle(0, [1, 0, 1]),
     },])
-    Graphics.camera.target = testSphere.position;
-    Graphics.camera.position = subtract(testSphere.position, {x:0, y:-5, z:10})
+    
+    Graphics.camera.position = {x: 0, y:10, z:0};
+    Graphics.camera.target = {x: 0, y:10, z:5};
+    Graphics.addToDrawQueue(iron, [{
+        position: {x:0, y:10, z: 5},
+        scale: {x: 1, y:1, z:1},
+        quaternion: inputQuaternion,
+    },])
+    // Graphics.camera.target = testSphere.position;
+    // Graphics.camera.position = subtract(testSphere.position, {x:0, y:-5, z:10})
     // Graphics.camera.position.y = 50;
     // Graphics.camera.position.x = Math.cos(d * 0.00) * 200;
     // Graphics.camera.position.z = Math.sin(d * 0.00) * 200;
     Graphics.draw();
     requestAnimationFrame(frame)
+    console.log(testSphere)
 }
 
-requestAnimationFrame(frame)
 
 /** @param {string} msg */
-window.readRemoteMessage = function(msg) { }
+window.readRemoteMessage = function(msg) { 
+    let data = JSON.parse(msg.data);
+    inputQuaternion.i = data.data[0];
+    inputQuaternion.j = data.data[1];
+    inputQuaternion.k = data.data[2];
+    inputQuaternion.w = data.data[3];
+}
+// requestAnimationFrame(frame)
 
 window.onConnection = function() {
     for (const el of document.getElementsByTagName("canvas")) {
         el.style.visibility = "visible";
     }
+    // requestAnimationFrame(frame)
 }
