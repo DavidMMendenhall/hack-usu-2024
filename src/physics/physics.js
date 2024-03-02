@@ -35,7 +35,7 @@ let Physics = (() => {
             
                 let intersection = bvh.findIntersection({point:sphere.position, dir:sphere.velocity});
                 if(intersection.point){
-                    if(intersection.point.t < delta){
+                    if(intersection.point.t > delta){
                         sphere.position = add(sphere.position, scale(sphere.velocity, delta));
                     } else {
                         // colision

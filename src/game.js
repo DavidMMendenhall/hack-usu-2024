@@ -73,7 +73,7 @@ let Game = await ( async () => {
         y: 0,
         z: -1,
     }
-    let teeCamDistance = 1;
+    let teeCamDistance = 1.25;
     let clubDistance = 0.6;
     let teePosition = {
         x: 0,
@@ -129,19 +129,19 @@ let Game = await ( async () => {
                 let clubOrigin = {
                     x: Math.cos(teeAngle + Math.PI / 2) * clubDistance,
                     y: 0.80,
-                    z: Math.sin(teeAngle + Math.PI / 2) * clubDistance,
+                    z: Math.sin(teeAngle + Math.PI / 2) * clubDistance - 0.05,
                 }
                 clubOrigin = add(clubOrigin, teePosition);
                 let clubQuaternion = multiplyQuaternion(multiplyQuaternion(inputQuaternion,calQuaternion), quaternionFromAngle(teeAngle - Math.PI / 2, [0, 1, 0]));
                 let headPosition = transformVector(matrixFromQuaternion(clubQuaternion),clubHead);
                 clubCollisionOld = clubCollision.position;
                 clubCollision.position = add(clubOrigin, headPosition);
-                clubCollision.velocity = scale(subtract(clubCollision.position, clubCollisionOld), 1);
+                clubCollision.velocity = scale(subtract(clubCollision.position, clubCollisionOld), 1/60);
 
                 
                 Graphics.camera.position = add(teePosition, {x:Math.cos(teeAngle) * teeCamDistance, y:1, z:Math.sin(teeAngle) * teeCamDistance});
                 Graphics.camera.target = add(teePosition, {x:0, y:1, z:0});
-                Graphics.camera.fieldOfView = Math.PI / 1.5;
+                Graphics.camera.fieldOfView = Math.PI / 6 * 4;
                 Graphics.addToDrawQueue(models.clubs.iron, [{
                     position: clubOrigin,
                     scale: {x: 1, y:1, z:1},
@@ -171,7 +171,7 @@ let Game = await ( async () => {
                 // update ball influnce direction
                 // use magic up
                 // update ball physics
-                Physics.updateSphere(ballPhysicsModel, {x:0, y:-9.8, z:0}, dt)
+                Physics.updateSphere(ballPhysicsModel, {x:0, y:-4, z:0}, dt)
 
                 // check for collision with pots
                 // lag behind ball with camera
@@ -210,7 +210,7 @@ let Game = await ( async () => {
                 
                 // Graphics.camera.position = add(teePosition, {x:Math.cos(teeAngle) * teeCamDistance, y:1, z:Math.sin(teeAngle) * teeCamDistance});
                 let ballDir = subtract(ballPhysicsModel.position, Graphics.camera.position);
-                Graphics.camera.position = add(Graphics.camera.position, scale(ballDir, 0.05));
+                Graphics.camera.position = add(Graphics.camera.position, scale(ballDir, 0.025));
                 Graphics.camera.target = ballPhysicsModel.position;
                 Graphics.camera.fieldOfView = Math.PI / 1.5;
                 Graphics.addToDrawQueue(models.clubs.iron, [{
