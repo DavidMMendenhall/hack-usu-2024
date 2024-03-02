@@ -7,16 +7,17 @@ import { computeNormals } from "./modelLoader/normals.js";
 import { Physics } from "./physics/physics.js";
 
 let pot = await loadPLY("./assets/models/pot.ply", true);
+let ball = await loadPLY("./assets/models/golfball.ply", false);
 let tree = await loadPLY("./assets/models/tree.ply", false);
 let iron = await loadPLY("./assets/models/iron.ply", false);
-let level = await loadPLY("./assets/models/eyeglass-lake.ply", false);
+let level = await loadPLY("./assets/models/Alevel.ply", false);
 
 let inputQuaternion = quaternionFromAngle(0, [1, 0, 0]);
 /** @type {import("./physics/physics.js").PhysicsSphere} */
 let testSphere = {
-    radius: 0.5,
+    radius: 0.05,
     velocity: {x:1, y:0, z:1},
-    position: {x:0.3, y:3, z:7},
+    position: {x:10, y:15, z:-26},
     quaternion: quaternionFromAngle(0, [1, 0, 0]),
     rotationalVelocity: 1,
     axisOfRotation: {x:0, y:1, z:0},
@@ -32,7 +33,7 @@ let frame = (d) => {
     let dt = (d - timeOld)/1000;
     timeOld = d;
     Physics.updateSphere(testSphere, {x:0, y:-9.8, z:0}, dt)
-    Graphics.addToDrawQueue(pot, [
+    Graphics.addToDrawQueue(ball, [
         {
             position: testSphere.position,
             scale: {x: 1, y:1, z:1},
@@ -66,15 +67,15 @@ let frame = (d) => {
         quaternion: quaternionFromAngle(0, [1, 0, 1]),
     },])
     
-    Graphics.camera.position = {x: 0, y:15, z:0};
-    Graphics.camera.target = {x: 0, y:10, z:-5};
+    // Graphics.camera.position = {x: 0, y:15, z:0};
+    // Graphics.camera.target = {x: 0, y:10, z:-5};
     Graphics.addToDrawQueue(iron, [{
         position: {x:0, y:10, z: -5},
         scale: {x: 1, y:1, z:1},
         quaternion: inputQuaternion,
     },])
-    // Graphics.camera.target = testSphere.position;
-    // Graphics.camera.position = subtract(testSphere.position, {x:0, y:-5, z:10})
+    Graphics.camera.target = subtract(testSphere.position, {x:0, y:1, z:0});
+    Graphics.camera.position = subtract(testSphere.position, {x:10, y:-5, z:1})
     // Graphics.camera.position.y = 50;
     // Graphics.camera.position.x = Math.cos(d * 0.00) * 200;
     // Graphics.camera.position.z = Math.sin(d * 0.00) * 200;
@@ -106,3 +107,7 @@ window.onConnection = function() {
     }
     requestAnimationFrame(frame)
 }
+// for (const el of document.getElementsByTagName("canvas")) {
+//     el.style.visibility = "visible";
+// }
+// requestAnimationFrame(frame)
