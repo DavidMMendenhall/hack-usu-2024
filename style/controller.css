@@ -47,7 +47,7 @@ body {
 	margin: 0 auto;
 }
 
-#button-holder .button {
+#button-holder input {
 	display: inline-block;
 	font-size: 40pt;
 	width: 2em;
