@@ -46,63 +46,61 @@ function sendSensorData() {
 	
 }
 
-window.addEventListener("load", () => {
-	Promise.all([
-		navigator.permissions.query({ "name": "accelerometer" }),
-		navigator.permissions.query({ "name": "gyroscope" })
-	]).then(([acc, gyr]) => {
-		if (acc.state == "denied" || gyr.state == "denied") {
-			alert("DENIED: I need permission for accelerometer and gyroscope");
+Promise.all([
+	navigator.permissions.query({ "name": "accelerometer" }),
+	navigator.permissions.query({ "name": "gyroscope" })
+]).then(([acc, gyr]) => {
+	if (acc.state == "denied" || gyr.state == "denied") {
+		alert("DENIED: I need permission for accelerometer and gyroscope");
+		return;
+	}
+
+	if (acc.state == "prompt" || gyr.state == "prompt") {
+		const response = browser.permissions.request(["accelerometer", "gyroscope"]);
+		if (!response) {
+			alert("I need permission for accelerometer and gyroscope");
 			return;
 		}
+	}
 
-		if (acc.state == "prompt" || gyr.state == "prompt") {
-			const response = browser.permissions.request(["accelerometer", "gyroscope"]);
-			if (!response) {
-				alert("I need permission for accelerometer and gyroscope");
-				return;
-			}
-		}
+	if (acc.state == "granted" && gyr.state == "granted") {
+		alert("Got permissions :)");
+	}
 
-		if (acc.state == "granted" && gyr.state == "granted") {
-			alert("Got permissions :)");
-		}
+	orient = new AbsoluteOrientationSensor({ frequency: 60, referenceFrame: "device" });
+	gyro = new Gyroscope({ frequency: 60 });
 
-		orient = new AbsoluteOrientationSensor({ frequency: 60, referenceFrame: "device" });
-		gyro = new Gyroscope({ frequency: 60 });
-
-		orient.addEventListener("reading", () => {
-			alert("got orientation reading");
-			document.getElementById("status-text").innerText = "got orientation reading";
-			dataChannel.send(JSON.stringify({
-				type: "orientation",
-				data: orient.quaternion,
-			}));
-		});
-
-		orient.addEventListener("error", (event) => {
-			alert("got error doing orientation reading :(");
-			console.log(event);
-		});
-
-		gyro.addEventListener("reading", () => {
-			document.getElementById("status-text").innerText = "got gyroscope reading";
-			dataChannel.send(JSON.stringify({
-				type: "gyro",
-				x: gyro.x,
-				y: gyro.y,
-				z: gyro.z,
-			}));
-		});
-
-		gyro.addEventListener("error", (event) => {
-			alert("got error doing gyro reading :(");
-			console.log(event);
-		});
-
-		orient.start();
-		gyro.start();
-	}).catch(() => {
-		alert("Error getting accelerometer and gyroscope permissions");
+	orient.addEventListener("reading", () => {
+		alert("got orientation reading");
+		document.getElementById("status-text").innerText = "got orientation reading";
+		dataChannel.send(JSON.stringify({
+			type: "orientation",
+			data: orient.quaternion,
+		}));
 	});
+
+	orient.addEventListener("error", (event) => {
+		alert("got error doing orientation reading :(");
+		console.log(event);
+	});
+
+	gyro.addEventListener("reading", () => {
+		document.getElementById("status-text").innerText = "got gyroscope reading";
+		dataChannel.send(JSON.stringify({
+			type: "gyro",
+			x: gyro.x,
+			y: gyro.y,
+			z: gyro.z,
+		}));
+	});
+
+	gyro.addEventListener("error", (event) => {
+		alert("got error doing gyro reading :(");
+		console.log(event);
+	});
+
+	orient.start();
+	gyro.start();
+}).catch(() => {
+	alert("Error getting accelerometer and gyroscope permissions");
 });
