@@ -64,7 +64,10 @@ window.addEventListener("load", () => {
 			}
 		}
 
-		alert("Got permissions :)");
+		if (acc.state == "granted" && gyr.state == "granted") {
+			alert("Got permissions :)");
+		}
+
 		orient = new RelativeOrientationSensor({ frequency: 60, referenceFrame: "device" });
 		gyro = new Gyroscope({ frequency: 60 });
 
