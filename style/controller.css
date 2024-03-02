@@ -1,0 +1,57 @@
+body {
+	padding: 0;
+	margin: 0;
+	height: 100vh;
+}
+
+#login-holder {
+	text-align: center;
+	line-height: 35pt;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	height: 100%;
+}
+
+#login-holder input {
+	font-size: 20pt;
+}
+
+#controller-holder {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	height: 100%;
+}
+
+#luck-bar-holder {
+	width: 90%;
+	margin: 0 auto;
+	background-color: #ddd;
+	padding: 4pt;
+	border-radius: 14pt;
+}
+
+#luck-bar {
+	height: 20pt;
+	background-color: #88e;
+	border-radius: 10pt;
+}
+
+#button-holder {
+	display: flex;
+	justify-content: center;
+	margin: 0 auto;
+}
+
+#button-holder .button {
+	display: inline-block;
+	font-size: 40pt;
+	width: 2em;
+	height: 2em;
+	border: 3px solid red;
+	border-radius: 0.4em;
+	text-align: center;
+	background-color: #eee;
+	margin: 0 10px;
+}
