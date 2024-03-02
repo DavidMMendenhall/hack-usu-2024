@@ -1,9 +1,9 @@
 //@ts-check
 import { loadPLY } from "./modelLoader/modelLoader.js"
-import { multiplyQuaternion, quaternionFromAngle, unitQuaternionInverse } from "./math/quaternion.js";
+import { matrixFromQuaternion, multiplyQuaternion, quaternionFromAngle, unitQuaternionInverse } from "./math/quaternion.js";
 import { Graphics } from "./graphics/render.js";
 import { Physics } from "./physics/physics.js";
-import { add } from "./math/vector.js";
+import { add, magnitude, normalize, scale, subtract, transformVector } from "./math/vector.js";
 
 /**
  * @typedef PotDef
@@ -68,6 +68,11 @@ let Game = await ( async () => {
     let score = 0;
     let fluidLevel = 0;
     let teeAngle = 0;// in radians
+    const clubHead = {
+        x:0.05,
+        y: 0,
+        z: -1,
+    }
     let teeCamDistance = 1;
     let clubDistance = 0.6;
     let teePosition = {
@@ -87,6 +92,7 @@ let Game = await ( async () => {
     }
 
     // updates to be at the end of the club
+    let clubCollisionOld = {x:0, y:0, z:0};
     let clubCollision = {
         radius: 0.1,
         velocity: {x:0, y:0, z:0},
@@ -126,6 +132,12 @@ let Game = await ( async () => {
                     z: Math.sin(teeAngle + Math.PI / 2) * clubDistance,
                 }
                 clubOrigin = add(clubOrigin, teePosition);
+                let clubQuaternion = multiplyQuaternion(multiplyQuaternion(inputQuaternion,calQuaternion), quaternionFromAngle(teeAngle - Math.PI / 2, [0, 1, 0]));
+                let headPosition = transformVector(matrixFromQuaternion(clubQuaternion),clubHead);
+                clubCollisionOld = clubCollision.position;
+                clubCollision.position = add(clubOrigin, headPosition);
+                clubCollision.velocity = scale(subtract(clubCollision.position, clubCollisionOld), 1);
+
                 
                 Graphics.camera.position = add(teePosition, {x:Math.cos(teeAngle) * teeCamDistance, y:1, z:Math.sin(teeAngle) * teeCamDistance});
                 Graphics.camera.target = add(teePosition, {x:0, y:1, z:0});
@@ -133,7 +145,7 @@ let Game = await ( async () => {
                 Graphics.addToDrawQueue(models.clubs.iron, [{
                     position: clubOrigin,
                     scale: {x: 1, y:1, z:1},
-                    quaternion: multiplyQuaternion(multiplyQuaternion(inputQuaternion,calQuaternion), quaternionFromAngle(teeAngle - Math.PI / 2, [0, 1, 0])),
+                    quaternion:clubQuaternion,
                 },])
                 ballPhysicsModel.position = teePosition;
                 Graphics.addToDrawQueue(models.ball, [
@@ -143,7 +155,14 @@ let Game = await ( async () => {
                         quaternion: ballPhysicsModel.quaternion,
                     }
                 ]);
-                // console.log(Graphics.camera.target);
+                
+
+                if(magnitude(subtract(clubCollision.position, ballPhysicsModel.position)) < clubCollision.radius + ballPhysicsModel.radius){
+                    // hit
+                    ballPhysicsModel.velocity = clubCollision.velocity;
+                    state = STATES.ballInPlay;
+                    console.log(clubCollision.velocity);
+                }
                 requestAnimationFrame(gameLoop);
                 break;
             }
@@ -171,6 +190,41 @@ let Game = await ( async () => {
                 // If ball goes out of bounds(below water level), advance the stroke, go back to previous tee
                 // losely follow ball with camera
                 // draw level, ball, and pots
+                Graphics.addToDrawQueue(levelGeometry, [{
+                    position: {x:0, y:0, z: 0},
+                    scale: {x: 1, y:1, z:1},
+                    quaternion: quaternionFromAngle(0, [1, 0, 1]),
+                },])
+                let clubOrigin = {
+                    x: Math.cos(teeAngle + Math.PI / 2) * clubDistance,
+                    y: 0.80,
+                    z: Math.sin(teeAngle + Math.PI / 2) * clubDistance,
+                }
+                clubOrigin = add(clubOrigin, teePosition);
+                let clubQuaternion = multiplyQuaternion(multiplyQuaternion(inputQuaternion,calQuaternion), quaternionFromAngle(teeAngle - Math.PI / 2, [0, 1, 0]));
+                let headPosition = transformVector(matrixFromQuaternion(clubQuaternion),clubHead);
+                clubCollisionOld = clubCollision.position;
+                clubCollision.position = add(clubOrigin, headPosition);
+                clubCollision.velocity = scale(subtract(clubCollision.position, clubCollisionOld), 1/60);
+
+                
+                // Graphics.camera.position = add(teePosition, {x:Math.cos(teeAngle) * teeCamDistance, y:1, z:Math.sin(teeAngle) * teeCamDistance});
+                let ballDir = subtract(ballPhysicsModel.position, Graphics.camera.position);
+                Graphics.camera.position = add(Graphics.camera.position, scale(ballDir, 0.05));
+                Graphics.camera.target = ballPhysicsModel.position;
+                Graphics.camera.fieldOfView = Math.PI / 1.5;
+                Graphics.addToDrawQueue(models.clubs.iron, [{
+                    position: clubOrigin,
+                    scale: {x: 1, y:1, z:1},
+                    quaternion:clubQuaternion,
+                },])
+                Graphics.addToDrawQueue(models.ball, [
+                    {
+                        position: ballPhysicsModel.position,
+                        scale: {x: 1, y:1, z:1},
+                        quaternion: ballPhysicsModel.quaternion,
+                    }
+                ]);
                 requestAnimationFrame(gameLoop);
                 break;
             }
@@ -210,7 +264,6 @@ let Game = await ( async () => {
     // @ts-ignore
     window.readRemoteMessage = function(msg) { 
         let data = JSON.parse(msg.data);
-        // console.log(msg)
         if(data.type=="orientation" && data.data){
             inputQuaternion.i =-data.data[0];
             inputQuaternion.j =-data.data[2];
@@ -220,7 +273,7 @@ let Game = await ( async () => {
         if(data.type=="calibrate"){
             calQuaternion = unitQuaternionInverse(inputQuaternion);
         }
-        if(data.type=="rotate" && data.direction){
+        if(data.type=="rotate"){
             if(data.direction < 0){
                 teeAngle -= Math.PI / 240;
             }
