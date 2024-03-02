@@ -105,5 +105,5 @@ let quaternionLookat = (a, b, up={x:0, y:1, z:0}) =>
     return quaternionFromAngle(rotAngle, [rotAxis.x, rotAxis.y, rotAxis.z]);
 }
 
-export {matrixFromQuaternion, quaternionFromAngle, multiplyQuaternion, quaternionLookat}
+export {matrixFromQuaternion, quaternionFromAngle, multiplyQuaternion, quaternionLookat, unitQuaternionInverse}
     
