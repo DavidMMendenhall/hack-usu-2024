@@ -44,24 +44,24 @@ let Physics = (() => {
                         sphere.position = add(sphere.position, scale(sphere.velocity, intersection.point.t));
                         // travel -= intersection.point.t * delta - sphere.radius - 0.001;
                         // sphere.position = add(sphere.position, sphereBackTrack);
-                        // let bouncyness = 
-                        // levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 0] * 3 + 0] +
-                        // levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 1] * 3 + 0] +
-                        // levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 2] * 3 + 0];
-                        // bouncyness /= 3;
-                        // bouncyness += 0.01;
-                        // let friction = 
-                        // levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 0] * 3 + 2] +
-                        // levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 1] * 3 + 2] +
-                        // levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 2] * 3 + 2];
-                        // friction /= 3;
-                        // let frictionRatio = 1 + dot(normalize(sphere.velocity), surfaceNormal);
-                        // friction= 0;
+                        let bouncyness = 
+                        levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 0] * 3 + 0] +
+                        levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 1] * 3 + 0] +
+                        levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 2] * 3 + 0];
+                        bouncyness /= 6;
+                        let friction = 
+                        levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 0] * 3 + 2] +
+                        levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 1] * 3 + 2] +
+                        levelGeometry.colors[levelGeometry.indices[intersection.face * 3 + 2] * 3 + 2];
+                        friction /= 3;
+                        let frictionRatio = 1 + dot(normalize(sphere.velocity), surfaceNormal);
+                        friction= 0;
                         // bouncyness = 1;
-                        // friction *= frictionRatio;
-                        // bouncyness = Math.min(1.0, Math.max(0.75, bouncyness))
-                        // friction = Math.max(0.1, friction);
+                        friction *= frictionRatio;
+                        // bouncyness = o
+                        friction = Math.max(0.1, friction + 0.25);
                         sphere.velocity = reflect(sphere.velocity, surfaceNormal);
+                        sphere.velocity = scale(sphere.velocity, Math.min(1.0, bouncyness + (1-friction)));
                         let rotAxes = cross(sphere.velocity, surfaceNormal);
                         sphere.axisOfRotation = rotAxes;
                         sphere.rotationalVelocity = magnitude(rotAxes) / sphere.radius / 2;

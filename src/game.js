@@ -151,6 +151,9 @@ let Game = await ( async () => {
 
     let state = STATES.idle;
     let oldTime = 0;
+    let stillTime = 0;
+    const STOP_TIME = 3000; // 3 seconds
+    const STOP_THRESHOLD = 0.05;
     let gameLoop = (time) => {
         let dt = (time - oldTime) / 1000;
         oldTime = time;
@@ -162,13 +165,9 @@ let Game = await ( async () => {
             }
 
             case STATES.hitting: {
-                // update club quaternion,
-                // move club hit box
                 // listen for rotation/calibrate commands from controller
                 // watch for shaking to build magic power
-                // check if club has hit ball hitbox, if so, check velocity of hit, transfer to ball at an upwards angle
                 // draw level, ball, and pots
-               
                 Graphics.addToDrawQueue(levelGeometry, [{
                     position: {x:0, y:0, z: 0},
                     scale: {x: 1, y:1, z:1},
@@ -177,16 +176,16 @@ let Game = await ( async () => {
 
                 addPotsToDrawQueue();
                 let clubOrigin = {
-                    x: Math.cos(teeAngle + Math.PI / 2) * clubDistance,
+                    x: Math.cos(teeAngle + Math.PI / 6) * clubDistance,
                     y: 0.80,
-                    z: Math.sin(teeAngle + Math.PI / 2) * clubDistance - 0.05,
+                    z: Math.sin(teeAngle + Math.PI / 6) * clubDistance,
                 }
                 clubOrigin = add(clubOrigin, teePosition);
                 let clubQuaternion = multiplyQuaternion(multiplyQuaternion(inputQuaternion,calQuaternion), quaternionFromAngle(teeAngle - Math.PI / 2, [0, 1, 0]));
                 let headPosition = transformVector(matrixFromQuaternion(clubQuaternion),clubHead);
                 clubCollisionOld = clubCollision.position;
                 clubCollision.position = add(clubOrigin, headPosition);
-                clubCollision.velocity = scale(subtract(clubCollision.position, clubCollisionOld), 1/60);
+                clubCollision.velocity = scale(subtract(clubCollision.position, clubCollisionOld), 300/6);
 
                 
                 Graphics.camera.position = add(teePosition, {x:Math.cos(teeAngle) * teeCamDistance, y:1, z:Math.sin(teeAngle) * teeCamDistance});
@@ -212,6 +211,7 @@ let Game = await ( async () => {
                     ballPhysicsModel.velocity = clubCollision.velocity;
                     state = STATES.ballInPlay;
                     console.log(clubCollision.velocity);
+                    stillTime = time;
                 }
                 requestAnimationFrame(gameLoop);
                 break;
@@ -221,7 +221,7 @@ let Game = await ( async () => {
                 // update ball influnce direction
                 // use magic up
                 // update ball physics
-                Physics.updateSphere(ballPhysicsModel, {x:0, y:-4, z:0}, dt)
+                Physics.updateSphere(ballPhysicsModel, {x:0, y:-3, z:0}, dt)
 
                 // check for collision with pots
                 // lag behind ball with camera
@@ -233,7 +233,7 @@ let Game = await ( async () => {
 
             case STATES.ballInPlay: {
                 // update ball physics
-                Physics.updateSphere(ballPhysicsModel, {x:0, y:-9.8, z:0}, dt)
+                Physics.updateSphere(ballPhysicsModel, {x:0, y:-3, z:0}, dt)
                 // check for collision with pots
                 // if ball is lower than a certain threshold for longer than a specified time,
                 // advance the stroke, new tee position is at ball location
@@ -254,15 +254,10 @@ let Game = await ( async () => {
                 }
                 clubOrigin = add(clubOrigin, teePosition);
                 let clubQuaternion = multiplyQuaternion(multiplyQuaternion(inputQuaternion,calQuaternion), quaternionFromAngle(teeAngle - Math.PI / 2, [0, 1, 0]));
-                let headPosition = transformVector(matrixFromQuaternion(clubQuaternion),clubHead);
-                clubCollisionOld = clubCollision.position;
-                clubCollision.position = add(clubOrigin, headPosition);
-                clubCollision.velocity = scale(subtract(clubCollision.position, clubCollisionOld), 1/60);
-
                 
-                // Graphics.camera.position = add(teePosition, {x:Math.cos(teeAngle) * teeCamDistance, y:1, z:Math.sin(teeAngle) * teeCamDistance});
-                let ballDir = subtract(ballPhysicsModel.position, Graphics.camera.position);
-                Graphics.camera.position = add(Graphics.camera.position, scale(ballDir, 0.025));
+                Graphics.camera.position = add(teePosition, {x:Math.cos(teeAngle) * teeCamDistance, y:1, z:Math.sin(teeAngle) * teeCamDistance});
+                let ballDir = add( {x:0, y:1, z:0}, subtract(ballPhysicsModel.position, Graphics.camera.position));
+                Graphics.camera.position = add(Graphics.camera.position, scale(ballDir, 0.1));
                 Graphics.camera.target = ballPhysicsModel.position;
                 Graphics.camera.fieldOfView = Math.PI / 1.5;
                 Graphics.addToDrawQueue(models.clubs.iron, [{
@@ -277,6 +272,17 @@ let Game = await ( async () => {
                         quaternion: ballPhysicsModel.quaternion,
                     }
                 ]);
+                if(magnitude(ballPhysicsModel.velocity) > STOP_THRESHOLD){
+                    stillTime = time;
+                }
+                if(time - stillTime > STOP_TIME){
+                    teePosition = add(ballPhysicsModel.position, {x:0, y:0, z:0});
+                    state = STATES.hitting;
+                }
+                if(ballPhysicsModel.position.y < fluidLevel){
+                    currentStroke++;
+                    state = STATES.hitting
+                }
                 requestAnimationFrame(gameLoop);
                 break;
             }
