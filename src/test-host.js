@@ -16,7 +16,7 @@ function readRemoteMessage(msg) {
 		}
 		default: {
 			logdiv = document.createElement("div");
-			logdiv.innerHTML = msg;
+			logdiv.innerHTML = JSON.stringify(data);
 
 			document.getElementById("log").append(logdiv);
 		}

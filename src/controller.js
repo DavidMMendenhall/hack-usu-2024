@@ -51,7 +51,6 @@ window.addEventListener("load", () => {
 		navigator.permissions.query({ "name": "accelerometer" }),
 		navigator.permissions.query({ "name": "gyroscope" })
 	]).then(([acc, gyr]) => {
-		alert("HI");
 		if (acc.state == "denied" || gyr.state == "denied") {
 			alert("DENIED: I need permission for accelerometer and gyroscope");
 			return;
@@ -65,6 +64,7 @@ window.addEventListener("load", () => {
 			}
 		}
 
+		alert("Got permissions :)");
 		orient = new RelativeOrientationSensor({ frequency: 60, referenceFrame: "device" });
 		gyro = new Gyroscope({ frequency: 60 });
 
