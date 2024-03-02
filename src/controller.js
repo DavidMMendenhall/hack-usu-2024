@@ -44,14 +44,14 @@ let orient = null;
 async function initSensors() {
 	try {
 		// Check if the browser supports the required sensors
-		if (!('RelativeOrientationSensor' in window) || !('Gyroscope' in window)) {
-			throw new Error('RelativeOrientationSensor or Gyroscope not supported in this browser.');
+		if (!('AbsoluteOrientationSensor' in window) || !('Gyroscope' in window)) {
+			throw new Error('AbsoluteOrientationSensor or Gyroscope not supported in this browser.');
 		}
 
 		// Request permission for AbsoluteOrientationSensor
 		const orientPermission = await navigator.permissions.query({ name: 'accelerometer' });
 		if (orientPermission.state !== 'granted') {
-			throw new Error('Permission for RelativeeOrientationSensor denied.');
+			throw new Error('Permission for AbsoluteOrientationSensor denied.');
 		}
 
 		// Request permission for Gyroscope
@@ -67,7 +67,7 @@ async function initSensors() {
 		}
 
 		// Instantiate sensors
-		orient = new RelativeOrientationSensor({ frequency: 60, referenceFrame: "device" });
+		orient = new AbsoluteOrientationSensor({ frequency: 60, referenceFrame: "device" });
 
 		// Set up event listeners
 		orient.addEventListener("reading", () => {
