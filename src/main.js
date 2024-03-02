@@ -9,12 +9,12 @@ import { Physics } from "./physics/physics.js";
 let pot = await loadPLY("./assets/models/pot.ply", true);
 let tree = await loadPLY("./assets/models/tree.ply", false);
 let iron = await loadPLY("./assets/models/iron.ply", false);
-let level = await loadPLY("./assets/models/ALevel.ply", false);
+let level = await loadPLY("./assets/models/eyeglass-lake.ply", false);
 /** @type {import("./physics/physics.js").PhysicsSphere} */
 let testSphere = {
     radius: 1,
-    velocity: {x:1, y:-5, z:1},
-    position: {x:1, y:10, z:1},
+    velocity: {x:1, y:0, z:1},
+    position: {x:0.3, y:2, z:7},
     quaternion: quaternionFromAngle(0, [1, 0, 0]),
     rotationalVelocity: 1,
     axisOfRotation: {x:0, y:1, z:0},
