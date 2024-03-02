@@ -71,13 +71,14 @@ window.addEventListener("load", () => {
 		orient = new RelativeOrientationSensor({ frequency: 60, referenceFrame: "device" });
 		gyro = new Gyroscope({ frequency: 60 });
 
-		orient.addEventListener("reading", () => {
+		orient.onreading = () => {
+			alert("got orientation reading");
 			document.getElementById("status-text").innerText = "got orientation reading";
 			dataChannel.send(JSON.stringify({
 				type: "orientation",
 				data: orient.quaternion,
 			}));
-		});
+		}
 
 		gyro.addEventListener("reading", () => {
 			document.getElementById("status-text").innerText = "got gyroscope reading";
