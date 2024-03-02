@@ -40,11 +40,6 @@ function readRemoteMessage(msg) {
 function onConnection() { }
 
 let orient = null;
-let gyro = null;
-
-function sendSensorData() {
-	
-}
 
 async function initSensors() {
 	try {
@@ -65,7 +60,7 @@ async function initSensors() {
 			throw new Error('Permission for Gyroscope denied.');
 		}
 
-		// Request permission for Gyroscope
+		// Request permission for Magnetometer
 		const magnetPermission = await navigator.permissions.query({ name: 'magnetometer' });
 		if (magnetPermission.state !== 'granted') {
 			throw new Error('Permission for Magnetometer denied.');
@@ -73,12 +68,10 @@ async function initSensors() {
 
 		// Instantiate sensors
 		orient = new AbsoluteOrientationSensor({ frequency: 60, referenceFrame: "device" });
-		gyro = new Gyroscope({ frequency: 60 });
 
 		// Set up event listeners
 		orient.addEventListener("reading", () => {
 			console.log("Got orientation reading:", orient.quaternion);
-			document.getElementById("status-text").innerText = "got orientation reading";
 			dataChannel.send(JSON.stringify({
 				type: "orientation",
 				data: orient.quaternion,
@@ -89,29 +82,11 @@ async function initSensors() {
 			console.error("Error reading orientation sensor:", event);
 		});
 
-		gyro.addEventListener("reading", () => {
-			console.log("Got gyroscope reading:", { x: gyro.x, y: gyro.y, z: gyro.z });
-			document.getElementById("status-text").innerText = "got gyroscope reading";
-			dataChannel.send(JSON.stringify({
-				type: "gyro",
-				x: gyro.x,
-				y: gyro.y,
-				z: gyro.z,
-			}));
-		});
-
-		gyro.addEventListener("error", (event) => {
-			console.error("Error reading gyroscope:", event);
-		});
-
 		// Start sensors
 		orient.start();
-		gyro.start();
 
-		document.getElementById("status-text").innerText = "Sensors initialized and started successfully.";
 	} catch (error) {
 		console.error('Error initializing sensors:', error);
-		document.getElementById("status-text").innerText = "Error initializing sensors: " + error.message;
 	}
 }
 

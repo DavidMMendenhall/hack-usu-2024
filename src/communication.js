@@ -50,7 +50,6 @@ function createGame() {
 		document.getElementById("status-text").classList.add("error");
 		return false;
 	}
-	disableGUI();
 
 	gameId = generateCode(6);
 	document.getElementById("login-game-id").innerHTML = "Your game's id is: " + gameId;
@@ -102,8 +101,6 @@ async function joinGame() {
 		document.getElementById("login-code").classList.remove("error");
 	}
 
-	disableGUI();
-
 	gameId = document.getElementById("login-code").value;
 
 	document.getElementById("status-text").innerHTML = "Checking for game...";
@@ -119,7 +116,6 @@ async function joinGame() {
 			document.getElementById("status-text").innerHTML = "The game does not exist or you are not connected to the internet";
 			document.getElementById("status-text").classList.remove("info");
 			document.getElementById("status-text").classList.add("error");
-			enableGUI();
 			return false;
 		}
 	} catch (e) {
@@ -127,7 +123,6 @@ async function joinGame() {
 		document.getElementById("status-text").innerHTML = "The game does not exist or you are not connected to the internet";
 		document.getElementById("status-text").classList.add("error");
 		document.getElementById("status-text").classList.remove("info");
-		enableGUI();
 		return false;
 	}
 
@@ -138,7 +133,6 @@ async function joinGame() {
 		document.getElementById("status-text").innerHTML = "This game has already started";
 		document.getElementById("status-text").classList.add("error");
 		document.getElementById("status-text").classList.remove("info");
-		enableGUI();
 		hasCreatedGame = false;
 		return false;
 	}
@@ -158,13 +152,27 @@ async function joinGame() {
 }
 
 function disableGUI() {
-	document.getElementById("login-holder").disabled = true;
-	document.getElementById("game-holder").disabled = false;
+	let lh = document.getElementById("login-holder");
+	if (lh) {
+		lh.style.display = "none";
+	}
+
+	let gh = document.getElementById("game-holder");
+	if (gh) {
+		gh.style.display = "visible";
+	}
 }
 
 function enableGUI() {
-	document.getElementById("login-holder").disabled = false;
-	document.getElementById("game-holder").disabled = true;
+	let lh = document.getElementById("login-holder");
+	if (lh) {
+		lh.style.display = "visible";
+	}
+
+	let gh = document.getElementById("game-holder");
+	if (gh) {
+		gh.style.display = "none";
+	}
 }
 
 async function checkMessages(data) {
@@ -178,7 +186,6 @@ async function checkMessages(data) {
 		peerConnection = new RTCPeerConnection();
 		dataChannel = peerConnection.createDataChannel("number");
 		rChannel = null;
-		enableGUI();
 		cState = STATE.NOT_STARTED;
 		hasCreatedGame = false;
 		remoteMessageId = 0;
@@ -304,7 +311,6 @@ async function processMessage(msg) {
 				document.getElementById("status-text").classList.remove("info");
 				hasCreatedGame = false;
 				cState = STATE.NOT_STARTED;
-				enableGUI();
 				gameDataRef.off();
 				sendReadConf();
 				//Stop waiting for a confirmation message as we are no longer listening 
@@ -357,6 +363,7 @@ function generateCode(length) {
 }
 
 function startListeningOnChannel(e) {
+	disableGUI();
 	rChannel = e.channel;
 	rChannel.onmessage = readRemoteMessage;
 	rChannel.onopen = function () {
@@ -378,7 +385,6 @@ function startListeningOnChannel(e) {
 		peerConnection = new RTCPeerConnection();
 		dataChannel = peerConnection.createDataChannel("number");
 		rChannel = null;
-		enableGUI();
 		cState = STATE.NOT_STARTED;
 		hasCreatedGame = false;
 		clearGameData();
