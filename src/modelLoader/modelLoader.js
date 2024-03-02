@@ -95,7 +95,7 @@ let parseGeometry = async (text, file, header, normalize=true) => {
         for(let vertex = 0; vertex < header.vertexCount; vertex ++){
             let line = text[vertexOffset + vertex];
             let values = line.split(' ');
-            let x=0, y=0, z=0, t=0, s=0, r=0, g=0, b=0, a=0, nx=0, ny=0, nz=0;
+            let x=0, y=0, z=0, t=0, s=0, r=255, g=120, b=120, a=255, nx=0, ny=0, nz=0;
             let index = 0;
             for(let i = 0; i < header.vertex_properties.length; i++){
                 let property = header.vertex_properties[i];
@@ -309,7 +309,7 @@ const byteSizeTable = {
     'float64':8,
 }
 
-let loadPLY = async (src) => {
+let loadPLY = async (src, normalize=true) => {
     /** @type {Blob} */
     let file;
     /** @type {PLYHeader} */
@@ -339,7 +339,7 @@ let loadPLY = async (src) => {
             header = parsePLYHeader(f);
             header.format = format;
             console.log(header);
-            return parseGeometry(f, file, header);
+            return parseGeometry(f, file, header, normalize);
         })
         .then(model => computeNormals(model))
 
