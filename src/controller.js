@@ -39,6 +39,10 @@ function readRemoteMessage(msg) {
 
 function onConnection() { }
 
+function calibrate() {
+	dataChannel.send('{"type":"calibrate"}')
+}
+
 let orient = null;
 
 async function initSensors() {

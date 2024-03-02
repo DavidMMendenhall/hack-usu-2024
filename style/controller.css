@@ -4,19 +4,23 @@ body {
 }
 
 #login-holder {
-	text-align: center;
-	line-height: 35pt;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
 	height: 100vh;
 }
 
-#login-holder input {
+.text-haver {
+	font-size: 20pt;
+	text-align: center;
+	line-height: 35pt;
+}
+
+.text-haver input {
 	font-size: 20pt;
 }
 
-#game-holder {
+#controller-holder {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;

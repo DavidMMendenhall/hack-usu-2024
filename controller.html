@@ -8,7 +8,7 @@
 		<link rel="stylesheet" href="style/controller.css"> 
 	</head>
 	<body>
-		<div id="login-holder">
+		<div id="login-holder" class="text-haver">
 			<div id="login">
 				<input type="text" id="login-code" placeholder="Game Code" size="8"/><br>
 				<input type="button" id="login-submit" value="Join" onclick="joinGame()"/><br>
@@ -23,6 +23,11 @@
 
 				<div id="button-holder">
 					<div class="button">&larr;</div><div class="button">&rarr;</div>
+				</div>
+
+				<div id="calibrate-button-holder" class="text-haver">
+					Point at your screen and press to <br>
+					<input type="button" id="calibrate" value="Calibrate" onclick="calibrate()">
 				</div>
 			</div>
 		</div>
