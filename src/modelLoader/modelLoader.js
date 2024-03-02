@@ -163,8 +163,8 @@ let parseGeometry = async (text, file, header, normalize=true) => {
             colors[vertex * 4 + 2] = b/255;
             colors[vertex * 4 + 3] = a/255;
 
-            textures[vertex * 2 + 0] = t;
-            textures[vertex * 2 + 1] = s;
+            textures[vertex * 2 + 0] = s;
+            textures[vertex * 2 + 1] = t;
         }
 
         let faceOffset = header.lineCount + header.vertexCount;
