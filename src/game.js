@@ -243,7 +243,7 @@ let Game = await ( async () => {
         let dt = (time - oldTime) / 1000;
         oldTime = time;
         Graphics.addToDrawQueue(CUBE_MODEL, [{
-            position: {x:0, y:fluidLevel - 1, z:0},
+            position: {x:0, y:fluidLevel - 0.5, z:0},
             scale: {x: 1000, y:1, z:1000},
             quaternion: quaternionFromAngle(0, [1, 0, 1]),
         },])

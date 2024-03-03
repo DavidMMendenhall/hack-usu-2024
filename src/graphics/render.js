@@ -331,7 +331,7 @@ let Graphics = await (async () => {
         target: {x: 0, y:0, z:0},
         up: {x:0, y:1, z:0},
         fieldOfView: Math.PI / 12,
-        near: -1,
+        near: -0.01,
         far: -1000,
     }
     /** @type {Model | null} */
